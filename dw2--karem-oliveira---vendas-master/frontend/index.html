@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Loja Escolar - Catálogo de produtos educacionais com carrinho de compras">
+    
+    <!-- Preconnect para fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <title>Loja Escolar - Produtos Educacionais</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header Principal -->
+    <header class="header" role="banner">
+        <div class="container">
+            <div class="header__content">
+                <!-- Logo/Brand -->
+                <div class="header__brand">
+                    <h1 class="brand__title">
+                        <span aria-label="Loja Escolar">📚 Loja Escolar</span>
+                    </h1>
+                </div>
+                
+                <!-- Barra de Busca -->
+                <div class="header__search">
+                    <form class="search-form" role="search" aria-label="Buscar produtos">
+                        <label for="search-input" class="sr-only">Buscar produtos</label>
+                        <input 
+                            type="search" 
+                            id="search-input" 
+                            class="search-input" 
+                            placeholder="Buscar produtos..."
+                            aria-describedby="search-hint"
+                        >
+                        <button type="submit" class="search-btn" aria-label="Executar busca">
+                            🔍
+                        </button>
+                    </form>
+                    <div id="search-hint" class="sr-only">Digite o nome do produto e pressione Enter</div>
+                </div>
+                
+                <!-- Controles do Header -->
+                <div class="header__controls">
+                    <!-- Botão Alternar Tema -->
+                    <button 
+                        type="button" 
+                        class="theme-toggle" 
+                        aria-label="Alternar entre tema claro e escuro"
+                        title="Alternar tema"
+                    >
+                        <span class="theme-icon" aria-hidden="true">🌙</span>
+                    </button>
+                    
+                    <!-- Área do Usuário -->
+                    <div class="user-area">
+                        <!-- Quando não logado -->
+                        <div class="user-actions" id="user-logged-out">
+                            <button type="button" class="btn btn--outline btn--sm" id="login-btn">
+                                Entrar
+                            </button>
+                            <button type="button" class="btn btn--primary btn--sm" id="register-btn">
+                                Cadastrar
+                            </button>
+                        </div>
+                        
+                        <!-- Quando logado -->
+                        <div class="user-menu" id="user-logged-in" style="display: none;">
+                            <button type="button" class="user-menu__toggle" id="user-menu-toggle">
+                                <img src="#" alt="Avatar" class="user-avatar" id="user-avatar" style="display: none;">
+                                <span class="user-name" id="user-name">Usuário</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            
+                            <div class="user-menu__dropdown" id="user-menu-dropdown">
+                                <a href="#" class="user-menu__item" id="profile-link">
+                                    👤 Meu Perfil
+                                </a>
+                                <div class="user-menu__divider"></div>
+                                <button type="button" class="user-menu__item user-menu__logout" id="logout-btn">
+                                    🚪 Sair
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão do Carrinho -->
+                    <button 
+                        type="button" 
+                        class="cart-toggle" 
+                        aria-label="Abrir carrinho de compras"
+                        title="Carrinho de compras"
+                    >
+                        <span class="cart-icon" aria-hidden="true">🛒</span>
+                        <span class="cart-badge" aria-label="0 itens no carrinho">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" role="main">
+        <div class="container">
+            
+            <!-- Controles de Filtro e Ordenação -->
+            <section class="filters" aria-label="Filtros e ordenação">
+                <div class="filters__row">
+                    <!-- Filtro por Categoria -->
+                    <div class="filter-group">
+                        <label for="category-filter" class="filter-label">Categoria:</label>
+                        <select id="category-filter" class="filter-select">
+                            <option value="">Todas as categorias</option>
+                            <!-- TODO: Popular dinamicamente via JS -->
+                        </select>
+                    </div>
+                    
+                    <!-- Ordenação -->
+                    <div class="filter-group">
+                        <label for="sort-select" class="filter-label">Ordenar por:</label>
+                        <select id="sort-select" class="filter-select">
+                            <option value="nome-asc">Nome (A-Z)</option>
+                            <option value="nome-desc">Nome (Z-A)</option>
+                            <option value="preco-asc">Preço (menor)</option>
+                            <option value="preco-desc">Preço (maior)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Botões de Export -->
+                    <div class="filter-group">
+                        <button type="button" class="btn btn--outline" id="export-csv">
+                            Exportar CSV
+                        </button>
+                        <button type="button" class="btn btn--outline" id="export-json">
+                            Exportar JSON
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Grid de Produtos -->
+            <section class="products" aria-label="Lista de produtos">
+                <div id="products-grid" class="products__grid">
+                    <!-- TODO: Cards de produtos serão inseridos dinamicamente via JS -->
+                    <div class="loading" aria-live="polite">
+                        Carregando produtos...
+                    </div>
+                </div>
+                
+                <!-- Paginação -->
+                <nav class="pagination" aria-label="Navegação de páginas" role="navigation">
+                    <button type="button" class="pagination__btn" id="prev-page" disabled>
+                        ← Anterior
+                    </button>
+                    <div class="pagination__info" aria-live="polite">
+                        Página <span id="current-page">1</span> de <span id="total-pages">1</span>
+                    </div>
+                    <button type="button" class="pagination__btn" id="next-page" disabled>
+                        Próxima →
+                    </button>
+                </nav>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal/Drawer do Carrinho -->
+    <div 
+        id="cart-drawer" 
+        class="cart-drawer" 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="cart-title"
+        aria-hidden="true"
+    >
+        <div class="cart-drawer__backdrop"></div>
+        <div class="cart-drawer__content">
+            
+            <!-- Header do Carrinho -->
+            <header class="cart-drawer__header">
+                <h2 id="cart-title" class="cart-drawer__title">Carrinho de Compras</h2>
+                <button 
+                    type="button" 
+                    class="cart-drawer__close" 
+                    aria-label="Fechar carrinho"
+                    title="Fechar carrinho"
+                >
+                    ✕
+                </button>
+            </header>
+            
+            <!-- Lista de Itens -->
+            <div class="cart-drawer__body">
+                <div id="cart-items" class="cart-items">
+                    <!-- TODO: Itens do carrinho serão inseridos via JS -->
+                    <div class="cart-empty">
+                        <p>Seu carrinho está vazio</p>
+                        <p class="cart-empty__hint">Adicione produtos para continuar</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer com Totais e Checkout -->
+            <footer class="cart-drawer__footer">
+                <div class="cart-summary">
+                    <!-- Campo do Cupom -->
+                    <div class="coupon-section">
+                        <label for="coupon-input" class="coupon-label">Cupom de desconto:</label>
+                        <div class="coupon-input-group">
+                            <input 
+                                type="text" 
+                                id="coupon-input" 
+                                class="coupon-input" 
+                                placeholder="Ex: ALUNO10"
+                                maxlength="20"
+                            >
+                            <button type="button" class="btn btn--outline" id="apply-coupon">
+                                Aplicar
+                            </button>
+                        </div>
+                        <div id="coupon-feedback" class="coupon-feedback" aria-live="polite"></div>
+                    </div>
+                    
+                    <!-- Resumo de Valores -->
+                    <div class="cart-totals">
+                        <div class="cart-total-row">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="cart-total-row cart-discount" style="display: none;">
+                            <span>Desconto:</span>
+                            <span id="cart-discount">- R$ 0,00</span>
+                        </div>
+                        <div class="cart-total-row cart-total-final">
+                            <span>Total:</span>
+                            <span id="cart-total">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão de Confirmação -->
+                    <button 
+                        type="button" 
+                        class="btn btn--primary btn--large" 
+                        id="confirm-order"
+                        disabled
+                    >
+                        Confirmar Pedido
+                    </button>
+                </div>
+            </footer>
+            
+        </div>
+    </div>
+
+    <!-- Container para Toasts de Notificação -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true">
+        <!-- TODO: Toasts serão inseridos dinamicamente via JS -->
+    </div>
+
+    <!-- Screen Reader Only Announcements -->
+    <div id="sr-announcements" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- Modal de Login -->
+    <div class="modal" id="login-modal" style="display: none;">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">Entrar na Conta</h2>
+                <button type="button" class="modal__close" aria-label="Fechar modal">×</button>
+            </div>
+            
+            <form class="modal__body" id="login-form">
+                <div class="form-group">
+                    <label for="login-email" class="form-label">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="login-email" 
+                        class="form-input" 
+                        required 
+                        placeholder="seu@email.com"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Senha</label>
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        class="form-input" 
+                        required 
+                        placeholder="Sua senha"
+                    >
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary btn--large">
+                        Entrar
+                    </button>
+                    <button type="button" class="btn btn--text" id="switch-to-register">
+                        Não tem conta? Cadastrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div class="modal" id="register-modal" style="display: none;">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">Criar Conta</h2>
+                <button type="button" class="modal__close" aria-label="Fechar modal">×</button>
+            </div>
+            
+            <form class="modal__body" id="register-form">
+                <div class="form-group">
+                    <label for="register-name" class="form-label">Nome Completo</label>
+                    <input 
+                        type="text" 
+                        id="register-name" 
+                        class="form-input" 
+                        required 
+                        placeholder="Seu nome completo"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email" class="form-label">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="register-email" 
+                        class="form-input" 
+                        required 
+                        placeholder="seu@email.com"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password" class="form-label">Senha</label>
+                    <input 
+                        type="password" 
+                        id="register-password" 
+                        class="form-input" 
+                        required 
+                        placeholder="Mínimo 6 caracteres"
+                        minlength="6"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-phone" class="form-label">Telefone (opcional)</label>
+                    <input 
+                        type="tel" 
+                        id="register-phone" 
+                        class="form-input" 
+                        placeholder="(11) 99999-9999"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-address" class="form-label">Endereço (opcional)</label>
+                    <textarea 
+                        id="register-address" 
+                        class="form-textarea" 
+                        placeholder="Rua, número, bairro, cidade"
+                        rows="3"
+                    ></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary btn--large">
+                        Criar Conta
+                    </button>
+                    <button type="button" class="btn btn--text" id="switch-to-login">
+                        Já tem conta? Entrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil -->
+    <div class="modal" id="profile-modal" style="display: none;">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content modal__content--large">
+            <div class="modal__header">
+                <h2 class="modal__title">Meu Perfil</h2>
+                <button type="button" class="modal__close" aria-label="Fechar modal">×</button>
+            </div>
+            
+            <div class="modal__body">
+                <!-- Avatar Section -->
+                <div class="profile-avatar">
+                    <div class="avatar-display">
+                        <img src="#" alt="Avatar" id="profile-avatar-img" class="avatar-img" style="display: none;">
+                        <div class="avatar-placeholder" id="profile-avatar-placeholder">
+                            <span id="profile-avatar-initials">U</span>
+                        </div>
+                    </div>
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                        <button type="button" class="btn btn--outline btn--sm" id="change-avatar-btn">
+                            Alterar Foto
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Profile Form -->
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="profile-name" class="form-label">Nome Completo</label>
+                        <input 
+                            type="text" 
+                            id="profile-name" 
+                            class="form-input" 
+                            required 
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-email" class="form-label">E-mail</label>
+                        <input 
+                            type="email" 
+                            id="profile-email" 
+                            class="form-input" 
+                            disabled
+                        >
+                        <small class="form-help">O e-mail não pode ser alterado</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-phone" class="form-label">Telefone</label>
+                        <input 
+                            type="tel" 
+                            id="profile-phone" 
+                            class="form-input" 
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-address" class="form-label">Endereço</label>
+                        <textarea 
+                            id="profile-address" 
+                            class="form-textarea" 
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary">
+                            Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn--outline" id="cancel-profile-edit">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth.js" defer></script>
+    <script src="scripts.js" defer></script>
+</body>
+</html>

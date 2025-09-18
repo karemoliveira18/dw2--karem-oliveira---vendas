@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Autenticação</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-btn { margin: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Teste do Sistema de Autenticação</h1>
+    
+    <div>
+        <button class="test-btn" onclick="testRegister()">Testar Registro</button>
+        <button class="test-btn" onclick="testLogin()">Testar Login</button>
+        <button class="test-btn" onclick="showStatus()">Mostrar Status</button>
+        <button class="test-btn" onclick="clearData()">Limpar Dados</button>
+    </div>
+    
+    <div id="status"></div>
+    
+    <script src="auth.js"></script>
+    <script>
+        function showMessage(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>` + statusDiv.innerHTML;
+        }
+        
+        async function testRegister() {
+            showMessage('Testando registro...', 'info');
+            
+            const userData = {
+                email: 'teste@teste.com',
+                senha: '123456',
+                nome: 'Usuário Teste',
+                telefone: '(11) 99999-9999',
+                endereco: 'Rua Teste, 123'
+            };
+            
+            const result = await authManager.register(userData);
+            
+            if (result.success) {
+                showMessage('✅ Registro realizado com sucesso!', 'success');
+                showMessage(`Usuário: ${result.data.user.nome}`, 'info');
+            } else {
+                showMessage(`❌ Erro no registro: ${result.error}`, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            showMessage('Testando login...', 'info');
+            
+            const result = await authManager.login('teste@teste.com', '123456');
+            
+            if (result.success) {
+                showMessage('✅ Login realizado com sucesso!', 'success');
+                showMessage(`Usuário: ${result.data.user.nome}`, 'info');
+            } else {
+                showMessage(`❌ Erro no login: ${result.error}`, 'error');
+            }
+        }
+        
+        function showStatus() {
+            const isAuth = authManager.isAuthenticated();
+            const user = authManager.getUser();
+            const token = authManager.getToken();
+            
+            showMessage(`🔐 Autenticado: ${isAuth}`, 'info');
+            if (user) {
+                showMessage(`👤 Usuário: ${user.nome} (${user.email})`, 'info');
+            }
+            if (token) {
+                showMessage(`🎫 Token: ${token.substring(0, 20)}...`, 'info');
+            }
+        }
+        
+        function clearData() {
+            localStorage.clear();
+            showMessage('🗑️ Dados limpos. Recarregue a página.', 'info');
+        }
+        
+        // Mostrar status inicial
+        setTimeout(showStatus, 1000);
+    </script>
+</body>
+</html>

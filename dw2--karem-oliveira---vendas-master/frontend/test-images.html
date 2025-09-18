@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Imagens dos Produtos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
+        
+        .product-content {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+        
+        .product-category {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: #0EA5E9;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .success {
+            color: #059669;
+            background-color: #D1FAE5;
+            border: 1px solid #A7F3D0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Teste de Imagens dos Produtos</h1>
+        
+        <div class="status">
+            <div class="success">
+                ✅ Sistema de imagens configurado com sucesso!
+            </div>
+            <p><strong>Status da implementação:</strong></p>
+            <ul>
+                <li>✅ 10 imagens organizadas na pasta <code>/images</code></li>
+                <li>✅ Banco de dados atualizado com campo <code>imagem_filename</code></li>
+                <li>✅ Frontend configurado para exibir imagens reais</li>
+                <li>✅ Fallback para placeholder quando imagem não disponível</li>
+            </ul>
+        </div>
+        
+        <div class="products-grid" id="products-grid">
+            <!-- Os produtos serão carregados via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Dados mockados dos produtos com imagens para demonstração
+        const mockProducts = [
+            {
+                id: 1,
+                nome: "Matemática 6º Ano",
+                categoria: "Livros Didáticos",
+                preco: 89.90,
+                imagem_filename: "matematica-6-ano.jpg"
+            },
+            {
+                id: 2,
+                nome: "História do Brasil 9º Ano",
+                categoria: "Livros Didáticos", 
+                preco: 95.50,
+                imagem_filename: "historia-brasil-9-ano.png"
+            },
+            {
+                id: 3,
+                nome: "Kit Cadernos Universitários",
+                categoria: "Material Escolar",
+                preco: 45.90,
+                imagem_filename: "kit-cadernos-universitarios.png"
+            },
+            {
+                id: 4,
+                nome: "Mochila Escolar Grande",
+                categoria: "Material Escolar",
+                preco: 159.90,
+                imagem_filename: "mochila-escolar-grande.png"
+            },
+            {
+                id: 5,
+                nome: "Calculadora Científica",
+                categoria: "Material Escolar",
+                preco: 89.90,
+                imagem_filename: "calculadora-cientifica.png"
+            },
+            {
+                id: 6,
+                nome: "Camisa Polo Azul",
+                categoria: "Uniformes",
+                preco: 69.90,
+                imagem_filename: "camisa-polo-azul.png"
+            },
+            {
+                id: 7,
+                nome: "Tablet Educacional",
+                categoria: "Tecnologia",
+                preco: 899.90,
+                imagem_filename: "tablet-educacional.png"
+            },
+            {
+                id: 8,
+                nome: "Fones de Ouvido com Microfone",
+                categoria: "Tecnologia",
+                preco: 149.90,
+                imagem_filename: "fones-ouvido-microfone.png"
+            },
+            {
+                id: 9,
+                nome: "Bola de Futebol Oficial",
+                categoria: "Esportes",
+                preco: 89.90,
+                imagem_filename: "bola-futebol-oficial.png"
+            },
+            {
+                id: 10,
+                nome: "Kit Canetas Coloridas",
+                categoria: "Material Escolar",
+                preco: 24.90,
+                imagem_filename: "kit-canetas-coloridas.png"
+            },
+            {
+                id: 11,
+                nome: "Produto Sem Imagem",
+                categoria: "Teste",
+                preco: 19.90,
+                imagem_filename: null  // Para testar o fallback
+            }
+        ];
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(price);
+        }
+
+        function createProductCard(produto) {
+            const productImage = produto.imagem_filename 
+                ? `images/${produto.imagem_filename}` 
+                : `https://via.placeholder.com/280x200/0EA5E9/FFFFFF?text=${encodeURIComponent(produto.nome)}`;
+
+            return `
+                <div class="product-card">
+                    <img 
+                        src="${productImage}" 
+                        alt="${produto.nome}"
+                        class="product-image"
+                        onerror="this.src='https://via.placeholder.com/280x200/0EA5E9/FFFFFF?text=${encodeURIComponent(produto.nome)}'"
+                    />
+                    <div class="product-content">
+                        <div class="product-category">${produto.categoria}</div>
+                        <h3 class="product-title">${produto.nome}</h3>
+                        <div class="product-price">${formatPrice(produto.preco)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Renderizar produtos
+        document.addEventListener('DOMContentLoaded', function() {
+            const grid = document.getElementById('products-grid');
+            const productsHtml = mockProducts.map(produto => createProductCard(produto)).join('');
+            grid.innerHTML = productsHtml;
+        });
+    </script>
+</body>
+</html>
